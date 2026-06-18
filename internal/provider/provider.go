@@ -1,0 +1,23 @@
+package provider
+
+import "context"
+
+// Request represents a single LLM API Call
+type Request struct {
+	Model     string
+	Prompt    string
+	MaxTokens int
+}
+
+// Response represents the LLM output
+type Response struct {
+	context string
+	Tokens  string
+}
+
+// Provider is the contract every LLM Client must satisfy
+type Provider interface {
+	callLLM(ctx context.Context, req Request) (Response, error)
+	Name() string
+	ValidateConfig() error
+}
