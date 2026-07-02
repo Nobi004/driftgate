@@ -44,9 +44,18 @@ var runCmd = &cobra.Command{
 		}
 		r := runner.New(p, concurrency)
 
+		// Build options from flags
+		opts := runner.RunOptions{
+			SuiteFile: suiteFile,
+			TagFilter: viper.GetString("tag"),
+			Baseline:  viper.GetBool("baseline"),
+			Model:     viper.GetString("model"),
+			Provider:  viper.GetString("provider"),
+		}
+
 		// Execute
 		ctx := cmd.Context()
-		results, err := r.Execute(ctx, suiteFile)
+		results, err := r.Execute(ctx, opts)
 		if err != nil {
 			return fmt.Errorf("execution failed: %w", err)
 		}
