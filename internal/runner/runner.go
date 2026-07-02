@@ -3,11 +3,12 @@ package runner
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
-	"github.com/Nobi004/driftgate/internal/assertion"
-	"github.com/Nobi004/driftgate/internal/config"
-	"github.com/Nobi004/driftgate/internal/provider"
+	"github.com/nobi004/driftgate/internal/assertion"
+	"github.com/nobi004/driftgate/internal/config"
+	"github.com/nobi004/driftgate/internal/provider"
 )
 
 type Runner struct {
@@ -61,8 +62,9 @@ func (r *Runner) Execute(ctx context.Context, suiteFile string) ([]TestResult, e
 			}
 
 			resp, err := r.provider.CallLLM(ctx, provider.Request{
-				Model:  suite.Model,
-				Prompt: prompt,
+				Model:     suite.Model,
+				Prompt:    prompt,
+				MaxTokens: 1024,
 			})
 			if err != nil {
 				results[i] = TestResult{

@@ -11,13 +11,13 @@ type Request struct {
 
 // Response represents the LLM output
 type Response struct {
-	Context string
+	Content string
 	Tokens  int
 }
 
 // Provider is the contract every LLM Client must satisfy
 type Provider interface {
-	callLLM(ctx context.Context, req Request) (Response, error)
+	CallLLM(ctx context.Context, req Request) (Response, error)
 	Name() string
 	ValidateConfig() error
 }

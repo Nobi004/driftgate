@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Nobi004/driftgate/internal/provider"
-	"github.com/Nobi004/driftgate/internal/report"
-	"github.com/Nobi004/driftgate/internal/runner"
+	"github.com/nobi004/driftgate/internal/provider"
+	"github.com/nobi004/driftgate/internal/report"
+	"github.com/nobi004/driftgate/internal/runner"
 	"github.com/spf13/viper"
 	"os"
 

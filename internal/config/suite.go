@@ -22,7 +22,7 @@ type TestCase struct {
 	Tags       []string          `yaml:"tags"`
 	Prompt     string            `yaml:"prompt"`
 	Variables  map[string]string `yaml:"variables"`
-	Assertions string            `yaml:"assertions"`
+	Assertions []AssertionConfig `yaml:"assertions"`
 	Skip       bool              `yaml:"skip"`
 }
 

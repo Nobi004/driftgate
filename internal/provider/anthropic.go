@@ -36,7 +36,7 @@ func (c *AnthropicClient) ValidateConfig() error {
 	return nil
 }
 
-func (c *AnthropicClient) callLLM(ctx context.Context, req Request) (Response, error) {
+func (c *AnthropicClient) CallLLM(ctx context.Context, req Request) (Response, error) {
 	body, err := json.Marshal(map[string]interface{}{
 		"model":      req.Model,
 		"max_tokens": req.MaxTokens,
@@ -56,7 +56,7 @@ func (c *AnthropicClient) doWithRetry(ctx context.Context, body []byte) (Respons
 
 	for attempt := 0; attempt < maxRetries; attempt++ {
 		if attempt > 0 {
-			backoff := time.Duration(1<<attempt) * time.Second // 1s, 2s, 4s
+			backoff := time.Duration(1<<attempt) * time.Second
 			select {
 			case <-time.After(backoff):
 			case <-ctx.Done():
@@ -64,59 +64,74 @@ func (c *AnthropicClient) doWithRetry(ctx context.Context, body []byte) (Respons
 			}
 		}
 
-		httpReq, err := http.NewRequestWithContext(ctx, "POST",
-			c.baseURL+"/messages", bytes.NewReader(body))
-		if err != nil {
-			return Response{}, fmt.Errorf("create request: %w", err)
-		}
-
-		httpReq.Header.Set("x-api-key", c.apiKey)
-		httpReq.Header.Set("anthropic-version", "2023-06-01")
-		httpReq.Header.Set("content-type", "application/json")
-
-		resp, err := c.httpClient.Do(httpReq)
+		resp, err := c.doRequest(ctx, body)
 		if err != nil {
 			if attempt < maxRetries-1 {
-				continue // retry on network error
+				continue
 			}
 			return Response{}, fmt.Errorf("all retries exhausted: %w", err)
 		}
-		defer resp.Body.Close()
 
 		if resp.StatusCode == 429 {
-			continue // rate limit — retry
+			resp.Body.Close()
+			continue
 		}
 		if resp.StatusCode >= 500 {
-			continue // server error — retry
+			resp.Body.Close()
+			continue
 		}
 		if resp.StatusCode != 200 {
+			resp.Body.Close()
 			return Response{}, fmt.Errorf("API error %d", resp.StatusCode)
 		}
 
-		var result struct {
-			Content []struct {
-				Text string `json:"text"`
-			} `json:"content"`
-			Usage struct {
-				InputTokens  int `json:"input_tokens"`
-				OutputTokens int `json:"output_tokens"`
-			} `json:"usage"`
+		result, err := decodeResponse(resp)
+		resp.Body.Close()
+		if err != nil {
+			return Response{}, err
 		}
-
-		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-			return Response{}, fmt.Errorf("decode response: %w", err)
-		}
-
-		content := ""
-		if len(result.Content) > 0 {
-			content = result.Content[0].Text
-		}
-
-		return Response{
-			Content: content,
-			Tokens:  result.Usage.InputTokens + result.Usage.OutputTokens,
-		}, nil
+		return result, nil
 	}
 
 	return Response{}, fmt.Errorf("all retries exhausted")
+}
+
+func (c *AnthropicClient) doRequest(ctx context.Context, body []byte) (*http.Response, error) {
+	httpReq, err := http.NewRequestWithContext(ctx, "POST",
+		c.baseURL+"/messages", bytes.NewReader(body))
+	if err != nil {
+		return nil, fmt.Errorf("create request: %w", err)
+	}
+
+	httpReq.Header.Set("x-api-key", c.apiKey)
+	httpReq.Header.Set("anthropic-version", "2023-06-01")
+	httpReq.Header.Set("content-type", "application/json")
+
+	return c.httpClient.Do(httpReq)
+}
+
+func decodeResponse(resp *http.Response) (Response, error) {
+	var result struct {
+		Content []struct {
+			Text string `json:"text"`
+		} `json:"content"`
+		Usage struct {
+			InputTokens  int `json:"input_tokens"`
+			OutputTokens int `json:"output_tokens"`
+		} `json:"usage"`
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return Response{}, fmt.Errorf("decode response: %w", err)
+	}
+
+	content := ""
+	if len(result.Content) > 0 {
+		content = result.Content[0].Text
+	}
+
+	return Response{
+		Content: content,
+		Tokens:  result.Usage.InputTokens + result.Usage.OutputTokens,
+	}, nil
 }
