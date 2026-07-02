@@ -48,10 +48,12 @@ type TestCase struct {
 }
 
 type AssertionConfig struct {
-	Type   string `yaml:"type"`
-	Value  string `yaml:"value,omitempty"`
-	Schema any    `yaml:"schema,omitempty"`
-	Max    int    `yaml:"max,omitempty"`
+	Type          string `yaml:"type"`
+	Value         string `yaml:"value,omitempty"`
+	CaseSensitive bool   `yaml:"case_sensitive,omitempty"`
+	Negate        bool   `yaml:"negate,omitempty"`
+	Schema        any    `yaml:"schema,omitempty"`
+	Max           int    `yaml:"max,omitempty"`
 }
 
 func LoadSuite(path string) (*Suite, error) {
