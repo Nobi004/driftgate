@@ -17,9 +17,11 @@ type AnthropicClient struct {
 
 func NewAnthropicClient(apiKey string) *AnthropicClient {
 	return &AnthropicClient{
-		apiKey:     apiKey,
-		httpClient: &http.Client{Timeout: 60 * time.Second},
-		baseURL:    "https://api.anthropic.com/v1",
+		apiKey: apiKey,
+		httpClient: &http.Client{
+			Timeout: 60 * time.Second,
+		},
+		baseURL: "https://api.anthropic.com/v1",
 	}
 }
 
@@ -49,15 +51,14 @@ func (c *AnthropicClient) callLLM(ctx context.Context, req Request) (Response, e
 	return c.doWithRetry(ctx, body)
 }
 
-func (c *AnthropicClient) dowithRetry(ctx context.Context, body []byte) (Response, error) {
+func (c *AnthropicClient) doWithRetry(ctx context.Context, body []byte) (Response, error) {
 	const maxRetries = 3
 
 	for attempt := 0; attempt < maxRetries; attempt++ {
 		if attempt > 0 {
-			backoff := time.Duration(1<<attempt) * time.Second
+			backoff := time.Duration(1<<attempt) * time.Second // 1s, 2s, 4s
 			select {
 			case <-time.After(backoff):
-				// continue to retry
 			case <-ctx.Done():
 				return Response{}, ctx.Err()
 			}
@@ -67,15 +68,15 @@ func (c *AnthropicClient) dowithRetry(ctx context.Context, body []byte) (Respons
 			c.baseURL+"/messages", bytes.NewReader(body))
 		if err != nil {
 			return Response{}, fmt.Errorf("create request: %w", err)
-
 		}
+
 		httpReq.Header.Set("x-api-key", c.apiKey)
 		httpReq.Header.Set("anthropic-version", "2023-06-01")
 		httpReq.Header.Set("content-type", "application/json")
 
 		resp, err := c.httpClient.Do(httpReq)
 		if err != nil {
-			if attempt == maxRetries-1 {
+			if attempt < maxRetries-1 {
 				continue // retry on network error
 			}
 			return Response{}, fmt.Errorf("all retries exhausted: %w", err)
@@ -83,10 +84,10 @@ func (c *AnthropicClient) dowithRetry(ctx context.Context, body []byte) (Respons
 		defer resp.Body.Close()
 
 		if resp.StatusCode == 429 {
-			continue // retry on rate limit
+			continue // rate limit — retry
 		}
 		if resp.StatusCode >= 500 {
-			continue // retry on server error
+			continue // server error — retry
 		}
 		if resp.StatusCode != 200 {
 			return Response{}, fmt.Errorf("API error %d", resp.StatusCode)
