@@ -12,9 +12,9 @@ var rootCmd = &cobra.Command{
 detects regressions, catches loops, and integrates with CI/CD.`,
 }
 
-func Execute() {
-	cobra.CheckErr(rootCmd.Execute())
-}
+// func Execute() {
+//     cobra.CheckErr(rootCmd.Execute())
+// }
 
 func init() {
 	// Config file setup
@@ -23,6 +23,6 @@ func init() {
 
 	rootCmd.PersistentFlags().IntP("concurrency", "c", 5, "max parallel test execution")
 	rootCmd.PersistentFlags().String("provider", "anthropic", "LLM provider")
-	rootCmd.PersistentFlags().String("model", "claude-haiku-4-5-2025101", "model name")
+	rootCmd.PersistentFlags().String("model", "claude-haiku-4-5-20251001", "model name")
 
 }
