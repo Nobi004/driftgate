@@ -11,8 +11,8 @@ type Request struct {
 
 // Response represents the LLM output
 type Response struct {
-	context string
-	Tokens  string
+	Context string
+	Tokens  int
 }
 
 // Provider is the contract every LLM Client must satisfy
