@@ -2,13 +2,14 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+
+	"github.com/joho/godotenv"
 	"github.com/nobi004/driftgate/internal/provider"
 	"github.com/nobi004/driftgate/internal/report"
 	"github.com/nobi004/driftgate/internal/runner"
-	"github.com/spf13/viper"
-	"os"
-
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var runCmd = &cobra.Command{
@@ -20,6 +21,9 @@ var runCmd = &cobra.Command{
 		if len(args) == 1 {
 			suiteFile = args[0]
 		}
+
+		// Load .env file if present
+		godotenv.Load()
 
 		// Get API key from env
 		apiKey := os.Getenv("ANTHROPIC_API_KEY")
@@ -35,6 +39,9 @@ var runCmd = &cobra.Command{
 
 		// Create runner
 		concurrency := viper.GetInt("concurrency")
+		if concurrency <= 0 {
+			concurrency = 5
+		}
 		r := runner.New(p, concurrency)
 
 		// Execute

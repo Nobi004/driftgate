@@ -4,7 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 	"text/template"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -12,9 +15,27 @@ import (
 type Suite struct {
 	Provider    string     `yaml:"provider"`
 	Model       string     `yaml:"model"`
-	Timeout     int        `yaml:"timeout"`
+	Timeout     string     `yaml:"timeout"`
 	Concurrency int        `yaml:"concurrency"`
 	Tests       []TestCase `yaml:"tests"`
+}
+
+func (s *Suite) GetTimeout() time.Duration {
+	if s.Timeout == "" {
+		return 30 * time.Second
+	}
+
+	// Try parsing as duration string (e.g. "30s", "5m")
+	if d, err := time.ParseDuration(s.Timeout); err == nil {
+		return d
+	}
+
+	// Try parsing as plain number (seconds)
+	if secs, err := strconv.Atoi(strings.TrimSuffix(s.Timeout, "s")); err == nil {
+		return time.Duration(secs) * time.Second
+	}
+
+	return 30 * time.Second
 }
 
 type TestCase struct {

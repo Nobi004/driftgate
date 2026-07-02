@@ -25,4 +25,5 @@ func init() {
 	rootCmd.PersistentFlags().String("provider", "anthropic", "LLM provider")
 	rootCmd.PersistentFlags().String("model", "claude-haiku-4-5-20251001", "model name")
 
+	viper.BindPFlags(rootCmd.PersistentFlags())
 }
