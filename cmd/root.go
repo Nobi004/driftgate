@@ -12,10 +12,6 @@ var rootCmd = &cobra.Command{
 detects regressions, catches loops, and integrates with CI/CD.`,
 }
 
-// func Execute() {
-//     cobra.CheckErr(rootCmd.Execute())
-// }
-
 func init() {
 	// Config file setup
 	viper.SetEnvPrefix("DRIFTGATE")
