@@ -2,7 +2,7 @@
 
 ## What is Driftgate?
 
-Driftgate is an open-source LLM regression testing framework that validates AI model outputs against expected behavior. It sends prompts to Large Language Models (like Claude) and checks if responses match your assertions — catching when behavior "drifts" from what you expect.
+Driftgate is an open-source LLM regression testing framework that validates AI model outputs against expected behavior. It sends prompts to Large Language Models (like **Claude**, **Groq**, or local models via **Ollama**) and checks if responses match your assertions — catching when behavior "drifts" from what you expect.
 
 Think of it as **unit tests, but for LLM outputs**.
 
@@ -75,6 +75,7 @@ Run Driftgate in your pipeline before deploying an LLM-powered feature. If tests
 - run: driftgate run --tag smoke
   env:
     ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
 ```
 
 ### 4. Model Migration Testing
@@ -82,8 +83,14 @@ Run Driftgate in your pipeline before deploying an LLM-powered feature. If tests
 Switching from one model to another? Run the same test suite to verify behavior is consistent.
 
 ```bash
-driftgate run --model claude-sonnet-4-20250514
+driftgate run --model llama3-8b-8192
 ```
+
+**Groq Free Tier:** Groq offers a generous free tier with `llama3-8b-8192` — perfect for testing without API costs. Models available:
+- `llama3-8b-8192` — Fast, free tier
+- `llama3-70b-8192` — Larger, more capable
+- `mixtral-8x7b-32768` — Long context (32K)
+- `gemma-7b-it` / `gemma2-9b-it` — Google's Gemma models
 
 ### 5. Regression Detection
 
@@ -253,8 +260,11 @@ Uses smaller, cheaper models for testing (like Claude Haiku) while validating be
 # Install
 go install github.com/nobi004/driftgate@latest
 
-# Setup
+# Setup (choose one)
 export ANTHROPIC_API_KEY=sk-ant-your-key-here
+# or
+export GROQ_API_KEY=gsk_your-key-here
+
 driftgate init
 
 # Edit .driftgate/suite.yaml with your tests
