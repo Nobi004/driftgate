@@ -33,8 +33,10 @@ Driftgate lets you:
 # 1. Install
 go install github.com/nobi004/driftgate@latest
 
-# 2. Set your API key
+# 2. Set your API key (choose one)
 export ANTHROPIC_API_KEY=sk-ant-your-key-here
+# or
+export GROQ_API_KEY=gsk_your-key-here
 
 # 3. Initialize a test suite
 driftgate init
@@ -133,8 +135,8 @@ driftgate run -c 10
 Create `.driftgate/suite.yaml`:
 
 ```yaml
-provider: anthropic
-model: claude-haiku-4-5-20251001
+provider: groq
+model: llama3-8b-8192
 timeout: 30s
 concurrency: 5
 
@@ -156,10 +158,10 @@ tests:
         negate: true
 
   - name: "math correctness"
-    prompt: "What is 2 + 2? Answer with just the number."
+    prompt: "What is 15 × 17? Answer with just the number."
     assertions:
       - type: contains
-        value: "4"
+        value: "255"
 
   - name: "skipped test"
     skip: true
@@ -178,12 +180,22 @@ tests:
         value: "Alice"
 ```
 
+### Groq Models
+
+| Model | Description |
+|-------|-------------|
+| `llama3-8b-8192` | Free tier, fast, 8K context |
+| `llama3-70b-8192` | Larger model, 8K context |
+| `mixtral-8x7b-32768` | Mixture of experts, 32K context |
+| `gemma-7b-it` | Google's Gemma, instruction-tuned |
+| `gemma2-9b-it` | Gemma 2, 9B params |
+
 ### Suite Fields
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `provider` | string | LLM provider (e.g., `anthropic`) |
-| `model` | string | Model name (e.g., `claude-haiku-4-5-20251001`) |
+| `provider` | string | LLM provider (e.g., `anthropic`, `groq`, `ollama`) |
+| `model` | string | Model name (e.g., `claude-haiku-4-5-20251001`, `llama3-8b-8192`) |
 | `timeout` | string | Request timeout (e.g., `30s`, `5m`) |
 | `concurrency` | int | Max parallel tests |
 | `tests` | array | List of test cases |
@@ -370,12 +382,15 @@ Run nightly to catch provider changes before users do.
 
 | Variable | Description |
 |----------|-------------|
-| `ANTHROPIC_API_KEY` | Required. Your Anthropic API key |
+| `ANTHROPIC_API_KEY` | Your Anthropic API key |
+| `GROQ_API_KEY` | Your Groq API key (free tier available) |
+| `OLLAMA_API_KEY` | Optional, for local Ollama |
 
 You can also use a `.env` file:
 
 ```
 ANTHROPIC_API_KEY=sk-ant-your-key-here
+GROQ_API_KEY=gsk_your-key-here
 ```
 
 ---
@@ -400,6 +415,7 @@ jobs:
       - run: driftgate run --tag smoke
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
 ```
 
 ### GitLab CI
@@ -412,6 +428,7 @@ test:
     - driftgate run --tag smoke
   variables:
     ANTHROPIC_API_KEY: $ANTHROPIC_API_KEY
+    GROQ_API_KEY: $GROQ_API_KEY
 ```
 
 ### Jenkins
@@ -455,7 +472,9 @@ driftgate/
 │   │   └── suite.go           # Suite YAML parsing
 │   ├── provider/
 │   │   ├── provider.go        # Provider interface
-│   │   └── anthropic.go       # Anthropic implementation
+│   │   ├── anthropic.go       # Anthropic implementation
+│   │   ├── groq.go            # Groq implementation
+│   │   └── ollama.go          # Ollama implementation
 │   ├── report/
 │   │   └── terminal.go        # Terminal output
 │   └── runner/
