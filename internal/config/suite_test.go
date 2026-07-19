@@ -7,9 +7,13 @@ import (
 )
 
 func TestLoadSuite_ValidYAML(t *testing.T) {
+	// Set dummy API key for testing
+	os.Setenv("GROQ_API_KEY", "test-key")
+	defer os.Unsetenv("GROQ_API_KEY")
+
 	content := `
-provider: anthropic
-model: claude-haiku-4-5-20251001
+provider: groq
+model: llama3-8b-8192
 timeout: 30s
 concurrency: 5
 tests:
@@ -28,11 +32,11 @@ tests:
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if suite.Provider != "anthropic" {
-		t.Errorf("expected provider 'anthropic', got %s", suite.Provider)
+	if suite.Provider != "groq" {
+		t.Errorf("expected provider 'groq', got %s", suite.Provider)
 	}
-	if suite.Model != "claude-haiku-4-5-20251001" {
-		t.Errorf("expected model 'claude-haiku-4-5-20251001', got %s", suite.Model)
+	if suite.Model != "llama3-8b-8192" {
+		t.Errorf("expected model 'llama3-8b-8192', got %s", suite.Model)
 	}
 	if len(suite.Tests) != 1 {
 		t.Errorf("expected 1 test, got %d", len(suite.Tests))
@@ -40,9 +44,12 @@ tests:
 }
 
 func TestLoadSuite_WithTags(t *testing.T) {
+	os.Setenv("GROQ_API_KEY", "test-key")
+	defer os.Unsetenv("GROQ_API_KEY")
+
 	content := `
-provider: anthropic
-model: claude-haiku-4-5-20251001
+provider: groq
+model: llama3-8b-8192
 tests:
   - name: "tagged test"
     tags: [smoke, regression]
@@ -66,9 +73,12 @@ tests:
 }
 
 func TestLoadSuite_WithSkip(t *testing.T) {
+	os.Setenv("GROQ_API_KEY", "test-key")
+	defer os.Unsetenv("GROQ_API_KEY")
+
 	content := `
-provider: anthropic
-model: claude-haiku-4-5-20251001
+provider: groq
+model: llama3-8b-8192
 tests:
   - name: "skipped test"
     skip: true
@@ -92,9 +102,12 @@ tests:
 }
 
 func TestLoadSuite_WithVariables(t *testing.T) {
+	os.Setenv("GROQ_API_KEY", "test-key")
+	defer os.Unsetenv("GROQ_API_KEY")
+
 	content := `
-provider: anthropic
-model: claude-haiku-4-5-20251001
+provider: groq
+model: llama3-8b-8192
 tests:
   - name: "template test"
     prompt: "Hello {{.Name}}"
@@ -125,7 +138,7 @@ tests:
 
 func TestLoadSuite_MissingProvider(t *testing.T) {
 	content := `
-model: claude-haiku-4-5-20251001
+model: llama3-8b-8192
 tests:
   - name: "test"
     prompt: "test"
@@ -142,8 +155,8 @@ tests:
 
 func TestLoadSuite_NoTests(t *testing.T) {
 	content := `
-provider: anthropic
-model: claude-haiku-4-5-20251001
+provider: groq
+model: llama3-8b-8192
 tests: []
 `
 	dir := t.TempDir()
