@@ -13,7 +13,7 @@ func TestLoadSuite_ValidYAML(t *testing.T) {
 
 	content := `
 provider: groq
-model: llama3-8b-8192
+model: llama-3.1-8b-instant
 timeout: 30s
 concurrency: 5
 tests:
@@ -35,8 +35,8 @@ tests:
 	if suite.Provider != "groq" {
 		t.Errorf("expected provider 'groq', got %s", suite.Provider)
 	}
-	if suite.Model != "llama3-8b-8192" {
-		t.Errorf("expected model 'llama3-8b-8192', got %s", suite.Model)
+	if suite.Model != "llama-3.1-8b-instant" {
+		t.Errorf("expected model 'llama-3.1-8b-instant', got %s", suite.Model)
 	}
 	if len(suite.Tests) != 1 {
 		t.Errorf("expected 1 test, got %d", len(suite.Tests))
@@ -49,7 +49,7 @@ func TestLoadSuite_WithTags(t *testing.T) {
 
 	content := `
 provider: groq
-model: llama3-8b-8192
+model: llama-3.1-8b-instant
 tests:
   - name: "tagged test"
     tags: [smoke, regression]
@@ -78,7 +78,7 @@ func TestLoadSuite_WithSkip(t *testing.T) {
 
 	content := `
 provider: groq
-model: llama3-8b-8192
+model: llama-3.1-8b-instant
 tests:
   - name: "skipped test"
     skip: true
@@ -107,7 +107,7 @@ func TestLoadSuite_WithVariables(t *testing.T) {
 
 	content := `
 provider: groq
-model: llama3-8b-8192
+model: llama-3.1-8b-instant
 tests:
   - name: "template test"
     prompt: "Hello {{.Name}}"
@@ -138,7 +138,7 @@ tests:
 
 func TestLoadSuite_MissingProvider(t *testing.T) {
 	content := `
-model: llama3-8b-8192
+model: llama-3.1-8b-instant
 tests:
   - name: "test"
     prompt: "test"
@@ -156,7 +156,7 @@ tests:
 func TestLoadSuite_NoTests(t *testing.T) {
 	content := `
 provider: groq
-model: llama3-8b-8192
+model: llama-3.1-8b-instant
 tests: []
 `
 	dir := t.TempDir()

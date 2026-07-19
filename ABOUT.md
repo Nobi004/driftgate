@@ -83,11 +83,11 @@ Run Driftgate in your pipeline before deploying an LLM-powered feature. If tests
 Switching from one model to another? Run the same test suite to verify behavior is consistent.
 
 ```bash
-driftgate run --model llama3-8b-8192
+driftgate run --model llama-3.1-8b-instant
 ```
+**Groq Free Tier:** Groq offers a generous free tier with `llama-3.1-8b-instant` — perfect for testing without API costs. Models available:
 
-**Groq Free Tier:** Groq offers a generous free tier with `llama3-8b-8192` — perfect for testing without API costs. Models available:
-- `llama3-8b-8192` — Fast, free tier
+- `llama-3.1-8b-instant` — Fast, free tier
 - `llama3-70b-8192` — Larger, more capable
 - `mixtral-8x7b-32768` — Long context (32K)
 - `gemma-7b-it` / `gemma2-9b-it` — Google's Gemma models

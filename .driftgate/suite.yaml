@@ -6,7 +6,7 @@
 # Ollama models: run 'ollama list' to see available
 
 provider: groq
-model: llama3-8b-8192
+model: llama-3.1-8b-instant
 timeout: 30s
 concurrency: 5
 
@@ -17,4 +17,12 @@ tests:
     assertions:
       - type: contains
         value: "hello"
+        case_sensitive: false
+
+  - name: "math test"
+    tags: [regression]
+    prompt: "What is 2 + 2? Reply with just the number."
+    assertions:
+      - type: contains
+        value: "4"
         case_sensitive: false

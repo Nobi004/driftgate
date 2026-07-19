@@ -34,11 +34,12 @@ var runCmd = &cobra.Command{
 		}
 
 		// Determine provider from flags -> suite -> default
-		providerName := viper.GetString("provider")
-		if providerName == "" {
+		providerName := ""
+		if cmd.Flags().Changed("provider") {
+			providerName = viper.GetString("provider")
+		} else if suite.Provider != "" {
 			providerName = suite.Provider
-		}
-		if providerName == "" {
+		} else {
 			providerName = "anthropic"
 		}
 
@@ -49,11 +50,12 @@ var runCmd = &cobra.Command{
 		}
 
 		// Determine model
-		model := viper.GetString("model")
-		if model == "" {
+		model := ""
+		if cmd.Flags().Changed("model") {
+			model = viper.GetString("model")
+		} else if suite.Model != "" {
 			model = suite.Model
-		}
-		if model == "" {
+		} else {
 			model = defaultModelForProvider(providerName)
 		}
 
@@ -77,10 +79,12 @@ var runCmd = &cobra.Command{
 		r := runner.New(p, concurrency)
 
 		// Build options from flags
+		tagFilter, _ := cmd.Flags().GetString("tag")
+		baseline, _ := cmd.Flags().GetBool("baseline")
 		opts := runner.RunOptions{
 			SuiteFile: suiteFile,
-			TagFilter: viper.GetString("tag"),
-			Baseline:  viper.GetBool("baseline"),
+			TagFilter: tagFilter,
+			Baseline:  baseline,
 			Model:     model,
 			Provider:  providerName,
 		}
@@ -154,7 +158,7 @@ func defaultModelForProvider(provider string) string {
 	case "anthropic":
 		return "claude-haiku-4-5-20251001"
 	case "groq":
-		return "llama-3.3-70b-versatile"
+		return "llama-3.1-8b-instant"
 	case "ollama":
 		return "llama3.2"
 	default:

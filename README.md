@@ -136,7 +136,7 @@ Create `.driftgate/suite.yaml`:
 
 ```yaml
 provider: groq
-model: llama3-8b-8192
+model: llama-3.1-8b-instant
 timeout: 30s
 concurrency: 5
 
@@ -184,7 +184,7 @@ tests:
 
 | Model | Description |
 |-------|-------------|
-| `llama3-8b-8192` | Free tier, fast, 8K context |
+| `llama-3.1-8b-instant` | Free tier, fast, 131K context |
 | `llama3-70b-8192` | Larger model, 8K context |
 | `mixtral-8x7b-32768` | Mixture of experts, 32K context |
 | `gemma-7b-it` | Google's Gemma, instruction-tuned |
@@ -195,7 +195,7 @@ tests:
 | Field | Type | Description |
 |-------|------|-------------|
 | `provider` | string | LLM provider (e.g., `anthropic`, `groq`, `ollama`) |
-| `model` | string | Model name (e.g., `claude-haiku-4-5-20251001`, `llama3-8b-8192`) |
+| `model` | string | Model name (e.g., `claude-haiku-4-5-20251001`, `llama-3.1-8b-instant`) |
 | `timeout` | string | Request timeout (e.g., `30s`, `5m`) |
 | `concurrency` | int | Max parallel tests |
 | `tests` | array | List of test cases |
