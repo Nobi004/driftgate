@@ -18,8 +18,9 @@ func init() {
 	viper.AutomaticEnv()
 
 	rootCmd.PersistentFlags().IntP("concurrency", "c", 5, "max parallel test execution")
-	rootCmd.PersistentFlags().String("provider", "anthropic", "LLM provider")
+	rootCmd.PersistentFlags().String("provider", "anthropic", "LLM provider (anthropic|ollama|groq)")
 	rootCmd.PersistentFlags().String("model", "claude-haiku-4-5-20251001", "model name")
+	rootCmd.PersistentFlags().String("base-url", "", "custom API base URL (optional)")
 
 	viper.BindPFlags(rootCmd.PersistentFlags())
 }
