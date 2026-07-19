@@ -14,19 +14,19 @@ type mockProvider struct {
 	err      error
 }
 
-func (m *mockProvider) CallLLM(ctx context.Context, req provider.Request) (provider.Response, error) {
+func (m *mockProvider) Generate(ctx context.Context, prompt string) (provider.Response, error) {
 	if m.err != nil {
 		return provider.Response{}, m.err
 	}
-	return provider.Response{Content: m.response, Tokens: 10}, nil
+	return provider.Response{Text: m.response, TokensIn: 5, TokensOut: 5}, nil
 }
 
 func (m *mockProvider) Name() string {
 	return "mock"
 }
 
-func (m *mockProvider) ValidateConfig() error {
-	return nil
+func (m *mockProvider) Health(ctx context.Context) error {
+	return m.err
 }
 
 func TestHasTag(t *testing.T) {
