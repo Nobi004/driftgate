@@ -13,6 +13,16 @@ import (
 	"github.com/nobi004/driftgate/internal/provider"
 )
 
+// Result holds the outcome of a single test
+type Result struct {
+	Name      string
+	Passed    bool
+	Duration  int64 //ms
+	Error     string
+	Response  string
+	TokensIn  int
+	TokensOut int
+}
 type Runner struct {
 	provider provider.Provider
 	pool     *WorkerPool
@@ -98,11 +108,7 @@ func (r *Runner) Execute(ctx context.Context, opts RunOptions) ([]TestResult, er
 				return nil
 			}
 
-			resp, err := r.provider.CallLLM(ctx, provider.Request{
-				Model:     suite.Model,
-				Prompt:    prompt,
-				MaxTokens: 1024,
-			})
+			resp, err := r.provider.Generate(ctx, prompt)
 			if err != nil {
 				results[idx] = TestResult{
 					Name:     tc.Name,
@@ -125,7 +131,7 @@ func (r *Runner) Execute(ctx context.Context, opts RunOptions) ([]TestResult, er
 						CaseSensitive: ac.CaseSensitive,
 						Negate:        ac.Negate,
 					}
-					result := a.Assert(resp.Content)
+					result := a.Assert(resp.Text)
 					if !result.Passed {
 						passed = false
 						failReasons = append(failReasons, result.Message)
