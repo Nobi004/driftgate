@@ -49,6 +49,42 @@ driftgate run
 
 ---
 
+## Quick Demo
+
+Try Driftgate in 30 seconds:
+
+```bash
+# Clone and build
+git clone https://github.com/nobi004/driftgate.git
+cd driftgate
+go build -o driftgate .
+
+# Set your Groq API key (free at console.groq.com)
+export GROQ_API_KEY=gsk_your-key-here
+
+# Run the demo suite (8 tests across 4 categories)
+./driftgate run demo/suite.yaml
+
+# Filter by tag
+./driftgate run demo/suite.yaml --tag smoke
+
+# See a failure in action (intentional wrong assertion)
+./driftgate run demo/suite.yaml --tag regression
+
+# Save baseline for future comparison
+./driftgate run demo/suite.yaml --baseline
+```
+
+The demo suite includes:
+- **Smoke tests** — greeting, math correctness
+- **Regression tests** — sentiment analysis, JSON output, intentional fail
+- **Unit tests** — code generation, language detection
+- **Integration tests** — summarization
+
+The intentional fail test shows how Driftgate catches when an LLM response doesn't match expectations.
+
+---
+
 ## Install
 
 ### From Source
