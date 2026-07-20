@@ -1,0 +1,78 @@
+# Driftgate Demo Test Suite
+# Run: driftgate run
+# Filter: driftgate run --tag smoke
+
+provider: groq
+model: llama-3.1-8b-instant
+timeout: 30s
+concurrency: 3
+
+tests:
+  # ── Smoke Tests ──────────────────────────────────────
+  - name: "Greeting test"
+    tags: [smoke]
+    prompt: "Say hello"
+    assertions:
+      - type: contains
+        value: "hello"
+        case_sensitive: false
+
+  - name: "Math test"
+    tags: [smoke]
+    prompt: "What is 12 * 8? Reply with just the number."
+    assertions:
+      - type: contains
+        value: "96"
+        case_sensitive: false
+
+  # ── Regression Tests ─────────────────────────────────
+  - name: "Sentiment analysis"
+    tags: [regression]
+    prompt: "Is 'I love this product' positive, negative or neutral? Reply with one word."
+    assertions:
+      - type: contains
+        value: "positive"
+        case_sensitive: false
+
+  - name: "JSON output"
+    tags: [regression]
+    prompt: "Return a JSON object with key 'status' and value 'ok'. Return only the JSON, no explanation."
+    assertions:
+      - type: contains
+        value: "status"
+        case_sensitive: false
+
+  # ── Unit Tests ───────────────────────────────────────
+  - name: "Code generation"
+    tags: [unit]
+    prompt: "Write a Python function called add that returns the sum of two numbers. Return only the code."
+    assertions:
+      - type: contains
+        value: "def add"
+        case_sensitive: false
+
+  - name: "Language detection"
+    tags: [unit]
+    prompt: "What language is this word: 'Bonjour'? Reply with just the language name."
+    assertions:
+      - type: contains
+        value: "French"
+        case_sensitive: false
+
+  # ── Integration Tests ────────────────────────────────
+  - name: "Summarization"
+    tags: [integration]
+    prompt: "Summarize in 5 words or less: The quick brown fox jumps over the lazy dog."
+    assertions:
+      - type: contains
+        value: "fox"
+        case_sensitive: false
+
+  # ── Intentional Fail (shows regression detection) ────
+  - name: "Wrong answer check"
+    tags: [regression]
+    prompt: "What is 2 + 2? Reply with just the number."
+    assertions:
+      - type: contains
+        value: "5"
+        case_sensitive: false
