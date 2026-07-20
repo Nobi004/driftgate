@@ -1,6 +1,8 @@
 # Driftgate
 
-**LLM regression testing framework.** Send prompts to an LLM and validate responses against assertions — catching when behavior "drifts" from expected output.
+**Your LLM changed behavior. Users noticed, you didn't.**
+
+Driftgate is a Go-based LLM regression testing framework. Single binary, zero dependencies. Catch regressions before they reach production.
 
 [![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go&logoColor=white)](https://golang.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -11,7 +13,7 @@
 
 [![Driftgate Explainer Video](https://img.shields.io/badge/Watch-Explainer_Video-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://app.heygen.com/videos/driftgate-llm-regression-testing-explainer-569904e50d8049bf8b048956e5bfe98b)
 
-> 2-minute walkthrough: init → write tests → run → tag filter → baseline → local model
+> LLMs are unpredictable. Models update without warning, and prompts that worked yesterday can break today. Driftgate automates your testing.
 
 ---
 
@@ -37,23 +39,27 @@ Driftgate lets you:
 
 ## Quick Start
 
+Write prompts as tests. Define assertions once, run anywhere.
+
 ```bash
 # 1. Install
 go install github.com/nobi004/driftgate@latest
 
 # 2. Set your API key (choose one)
-export ANTHROPIC_API_KEY=sk-ant-your-key-here
+export GROQ_API_KEY=gsk_your-key-here        # Free tier
 # or
-export GROQ_API_KEY=gsk_your-key-here
+export ANTHROPIC_API_KEY=sk-ant-your-key-here
 
 # 3. Initialize a test suite
 driftgate init
 
 # 4. Edit .driftgate/suite.yaml with your prompts
 
-# 5. Run tests
+# 5. Run your suite in seconds
 driftgate run
 ```
+
+From smoke tests to full regression, you're in control.
 
 ---
 
@@ -154,10 +160,12 @@ driftgate run -c 10
 
 ## How It Works
 
+Driftgate catches drifts instantly — that's regression detection in action.
+
 ```
 ┌─────────────┐     ┌──────────────┐     ┌─────────────┐
 │  Suite YAML │────▶│   Driftgate  │────▶│  LLM API    │
-│  (prompts + │     │   (runner)   │     │  (Claude)   │
+│  (prompts + │     │   (runner)   │     │  (any)      │
 │  assertions)│     └──────────────┘     └─────────────┘
 └─────────────┘            │
                            ▼
@@ -407,18 +415,20 @@ Run nightly to catch provider changes before users do.
 
 ---
 
-## Advantages
+## Why Driftgate?
 
 | Advantage | Description |
 |-----------|-------------|
-| **Early Detection** | Catch issues before they reach production |
-| **Automated** | No manual testing — define once, run always |
-| **Non-Invasive** | Tests LLM independently, no app code changes |
-| **Fast** | Concurrent execution — results in seconds |
-| **Easy** | Simple YAML configuration, no programming required |
-| **Extensible** | Add new assertions, providers, or formats |
+| **Single Binary** | No Docker, no Python, no Node — just one executable |
+| **YAML-Native** | Tests live in your repo, version controlled |
+| **Groq Free Tier** | 14,400 requests/day at zero cost |
+| **Ollama Local** | Run offline, full privacy, no API key |
+| **Tag Filtering** | Run only what you need — smoke, regression, unit |
+| **Baseline Snapshots** | Compare results over time |
 | **CI/CD Ready** | Works with GitHub Actions, GitLab CI, Jenkins |
-| **Cost Effective** | Uses cheaper models for testing |
+| **Open Source** | MIT licensed, community driven |
+
+Driftgate is the ultimate tool for production-ready LLM apps.
 
 ---
 
@@ -582,3 +592,13 @@ MIT License. See [LICENSE](LICENSE) for details.
 
 - [GitHub Issues](https://github.com/nobi004/driftgate/issues)
 - [Documentation](ABOUT.md)
+
+---
+
+**Stop guessing. Start testing.**
+
+Driftgate is open source and ready. Visit the GitHub repo to get started.
+
+```bash
+go install github.com/nobi004/driftgate@latest
+```
