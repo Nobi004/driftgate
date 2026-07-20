@@ -7,6 +7,14 @@
 
 ---
 
+### 🎬 Watch the Explainer Video
+
+[![Driftgate Explainer Video](https://img.shields.io/badge/Watch-Explainer_Video-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://app.heygen.com/videos/driftgate-llm-regression-testing-explainer-569904e50d8049bf8b048956e5bfe98b)
+
+> 2-minute walkthrough: init → write tests → run → tag filter → baseline → local model
+
+---
+
 ## Why Driftgate?
 
 LLMs are powerful but unpredictable. They can:
